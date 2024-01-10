@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<head>
+    <meta charset="UTF-8">
+    <title>Pick Players</title>
+</head>
+<body>
+<div class="container w-auto">
+    <header class="align-items-center mt-2 mb-2">
+        <a th:href="@{/team-generator/}" class="btn btn-info me-5 w-auto">Home</a>
+        <a th:href="@{/team-generator/player/add}" class="btn btn-info me-5 w-auto">Add player</a>
+    </header>
+    <h4 th:if="${error}" th:text="${error}" class="alert-danger text-danger"></h4>
+    <table class="table">
+        <tr>
+            <th scope="row">First name</th>
+            <th scope="row">Last name</th>
+            <th scope="row">Tier</th>
+        </tr>
+
+        <tr th:each="player : ${playingPlayer}">
+            <td th:text="${player.getFirstName()}"></td>
+            <td th:text="${player.getLastName()}"></td>
+            <td th:text="${player.getTier()}"></td>
+            <td th:unless="${player.isPlaying()}">
+                <form th:action="@{/team-generator/player/pick/{id}/{bool}(id=${player.getId()}, bool=${true})}" method="post">
+                    <button type="submit">Not playing</button>
+                </form>
+            </td>
+            <td th:if="${player.isPlaying()}">
+                <form th:action="@{/team-generator/player/pick/{id}/{bool}(id=${player.getId()}, bool=${false})}" method="post">
+                    <button type="submit">Playing</button>
+                </form>
+            </td>
+            <td>
+                <form th:action="@{/team-generator/player/update/{id}(id = ${player.getId()})}" method="get">
+                    <button type="submit">Update</button>
+                </form>
+            </td>
+            <td>
+                <form th:action="@{/team-generator/player/delete/{id}(id = ${player.getId()})}" method="get">
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+    <form th:action="@{/team-generator/player/make-team}" method="post">
+        <select name="teams">
+            <option th:each="teams : ${#numbers.sequence(2,6,1)}" th:value="${teams}" th:text="${teams}"></option>
+        </select>
+        <select name="numberOfPlayers">
+            <option th:each="teams : ${#numbers.sequence(3,11,1)}" th:value="${teams}" th:text="${teams}"></option>
+        </select>
+        <input type="submit" value="Make teams">
+    </form>
+</div>
+</body>
+</html>
